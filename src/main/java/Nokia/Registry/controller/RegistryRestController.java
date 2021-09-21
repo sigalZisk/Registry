@@ -1,5 +1,6 @@
 package Nokia.Registry.controller;
 
+import Nokia.Registry.Person;
 import Nokia.Registry.service.RegistryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,5 +24,11 @@ public class RegistryRestController{
     public Boolean delete(@RequestParam(value = "firstName") String firstName,
                           @RequestParam(value = "lastName") String lastName){
         return registerService.delete(firstName, lastName);
+    }
+
+    @GetMapping("/search")
+    public Person[] add(@RequestParam(value = "firstName") String firstName,
+                      @RequestParam(value = "lastName") String lastName){
+        return registerService.search(firstName, lastName);
     }
 }

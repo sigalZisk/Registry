@@ -4,6 +4,7 @@ import Nokia.Registry.Person;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
@@ -11,7 +12,7 @@ import static java.lang.Boolean.TRUE;
 @Repository
 public class RegistryRepository {
 
-    private HashMap<Map.Entry<String, String>, List<Person>> registry = new HashMap<>();
+    private ConcurrentHashMap<Map.Entry<String, String>, List<Person>> registry = new ConcurrentHashMap<>();
 
     public Boolean add(String firstName, String lastName, String id){
         if (null != id) {
@@ -34,10 +35,20 @@ public class RegistryRepository {
         Map.Entry<String, String> key = new AbstractMap.SimpleEntry<>(firstName,lastName);
         List<Person> people = registry.get(key);
         if (null != people){
-            people.remove(0);
-            return TRUE;
+            if(!people.isEmpty()) {
+                people.remove(0);
+                return TRUE;
+            }
         }
         return FALSE;
+    }
+
+    public Person[] search(String firstName, String lastName){
+        List<Person> people = registry.get(new AbstractMap.SimpleEntry<>(firstName, lastName));
+        if (null != people){
+            return people.toArray(new Person[0]);
+        }
+        return null;
     }
 
     public int size(){
@@ -47,5 +58,9 @@ public class RegistryRepository {
             size += people.size();
         }
         return size;
+    }
+
+    public void clean(){
+        registry.clear();
     }
 }
